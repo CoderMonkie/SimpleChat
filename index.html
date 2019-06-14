@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Simple Chat --- a chat room demo</title>
+    <script src="https://cdn.bootcss.com/socket.io/2.2.0/socket.io.js"></script>
+
+    <style>
+        body {
+            background-color: #CCC;
+            display: flex;
+            /* flex-direction: row; */
+            justify-content: center;
+        }
+        .chat-container {
+            background-color: rgb(229, 240, 255);
+            display: flex;
+            width: 800px;
+            height: 600px;
+        }
+
+        .chat-container .left {
+            /* width: 200px; */
+            flex: 1;
+            background-color: #336699
+        }
+
+        .chat-container .right {
+            background-color: dimgray;
+            flex: 3;
+            /* justify-content: flex-end; */
+            /* padding: 10px; */
+            display: flex;
+            flex-direction: column;
+            padding: 10px;
+        }
+
+        .messages {
+            /* height: 450px; */
+            width: auto;
+            background: pink;
+            flex: 1;
+        }
+
+        .new-msg {
+            display: flex;
+            flex-direction: column;
+            width: 100%;
+        }
+        .new-msg textarea {
+            resize: none;
+            height: 150px;
+
+        }
+
+        .send {
+            width: 60px;
+            height: 30px;
+            border-radius: 4px;
+            background-color: skyblue;
+            transition: 0.3s;
+
+            margin-top: 10px;
+            align-self: flex-end;
+        }
+        .send:hover{
+            width: 68px;
+            border-radius: 4px;
+            background-color: rgb(135, 153, 235);
+            color: white;
+        }
+    </style>
+</head>
+
+<body>
+    <div>
+        <h1>Get Connected! -- Chat Room</h1>
+        <div class="chat-container">
+            <div class="left">
+                <div class="current"></div>
+                <div class="list"></div>
+            </div>
+            <div class="right">
+                <div id='messages' class="messages">
+                    <p>123</p>
+                    <p>456</p>
+                </div>
+                <div class="new-msg">
+                    <textarea id='mes' rows="3" cols="20" autofocus wrap="soft"></textarea>
+                    <button id="btnSend" class="btn send">Send</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        var socket = io.connect('/')
+
+        var newMsg = document.getElementById('mes')
+        var oldMsg = document.getElementById('messages')
+        var btnSend = document.getElementById('btnSend')
+
+        btnSend.onclick = function () {
+            const msg = newMsg.value
+
+            if(msg === ''){
+                alert('nothing to send!')
+                return
+            }
+            oMsg = {
+                msg: msg,
+                action: 'foo'
+            }
+            socket.emit('message', JSON.stringify(oMsg))
+
+            newMsg.value = ''
+        }
+
+        socket.on('message', function (strMsg) {
+            var oMsg = JSON.parse(strMsg)
+
+            var msgToAdd = document.createElement('p')
+            msgToAdd.innerText = oMsg.msg
+
+            oldMsg.insertBefore(msgToAdd, oldMsg.firstChild)
+
+            console.dirxml(oldMsg)
+        })
+    </script>
+</body>
+
+</html>
